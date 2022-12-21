@@ -2,20 +2,15 @@ import { Square } from "./square"
 
 type RowProps = {
     rowNumber: number;
+    children: React.ReactNode;
 }
 
 export function Row(props: RowProps){
-    
-    
-
-    return (
+     return (
         <div className="row">
             {
-                Array(20).fill(null).map((_value, index) => (
-                    <Square key={index} row={props.rowNumber} column={index}/>
-                ))
+                props.children
             }
-            
         </div>
     )
 }

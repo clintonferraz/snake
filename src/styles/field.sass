@@ -1,16 +1,22 @@
 .field
     display: flex
     flex-direction: column
+    overflow: auto
+    width: auto
 
 .field .row
     display: flex
 
 .field .square
-    width: 30px
-    height: 30px
+    width: 15px
+    height: 15px
     background-color: #9bcfff
-    border: 1px solid blue 
+    border-left: 1px solid #3ba0ff 
+    border-top: 1px solid #3ba0ff  
+    flex-shrink: 0
 
 .field .square.on
-    background-color: #0084ff
+    background-color: #0071db
+    box-shadow: 0px 0px 7px #0071db
+    z-index: 1
    
