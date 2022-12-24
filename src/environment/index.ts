@@ -1,3 +1,3 @@
 export const Environment = {
-    FIELD_SIZE: 100,
+    FIELD_SIZE: 40,
 }
