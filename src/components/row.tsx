@@ -1,5 +1,3 @@
-import { Square } from "./square"
-
 type RowProps = {
     rowNumber: number;
     children: React.ReactNode;

@@ -1,11 +1,17 @@
+export enum SquareType {
+    Wall,
+    EmptySquare,
+    Snake,
+    Food
+}
+
 type SquareProps = {
-    isOn: boolean;
-    switch: () => void;
+    type: SquareType;
 }
 
 export function Square(props: SquareProps){
     return (
-        <div className={ props.isOn ? "square on" : "square"} onClick={props.switch}>
+        <div className={ (props.type == SquareType.Snake || props.type == SquareType.Food)  ? "square on" : "square"}>
         </div>
     )
 }
