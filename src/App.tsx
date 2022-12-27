@@ -19,29 +19,60 @@ function App() {
         initialHeadColumn:1,
         initialHeadRow:1,
         direction: Direction.Right
-    }));
+    })); 
+
+
 
     useEffect(() => {
-        if(snake.keepWalking){
-            setTimeout(() => {
-                walk1Step()
-            }, 100);
-        }
-    },[boolMatrix])
+        document.addEventListener('keydown', (event) => {
+        
+            switch (event.key) {
+                case 'ArrowDown':
+                    if (snake.direction != Direction.Up)
+                    snake.direction = Direction.Down;
+                    break;
+                case 'ArrowLeft':
+                    if (snake.direction != Direction.Right)
+                    snake.direction = Direction.Left;
+                    break;
+                case 'ArrowRight':
+                    if (snake.direction != Direction.Left)
+                    snake.direction = Direction.Right;
+                    break;
+                case 'ArrowUp':
+                    if (snake.direction != Direction.Down)
+                    snake.direction = Direction.Up;
+                    break;
+                case ' ':
+                    if(!snake.keepWalking){
+                        start();
+                    } else stop();
+                    break;
+
+            }
+        });
 
 
+
+    },[]);
+
+    useEffect(()=>{
     
+        let a = snake.keepWalking ? setInterval(walk1Step,100) : undefined;
+
+        return () => {
+            clearInterval(a);
+        }
+
+    })
+ 
 
     function switchSquare(row: number, column: number) {
-        let newMatrix = switchElement(boolMatrix, row, column);
-        setBoolMatrix(newMatrix);
+        setBoolMatrix((prev) =>  switchElement(prev, row, column));
     }
 
     function switchSquareTo(state: boolean, row: number, column: number) {
-        if (state != boolMatrix[row][column]) {
-            let newMatrix = switchElement(boolMatrix, row, column);
-            setBoolMatrix(newMatrix);
-        }
+        setBoolMatrix((prev) =>  state != prev[row][column] ? switchElement(prev, row, column) : prev);
     }
 
     function setSnakeHeadPosition(row:number, column:number){
@@ -74,32 +105,11 @@ function App() {
         }
     }
 
-    addEventListener('keydown', (event) => {
-        
-        switch (event.key) {
-            case 'ArrowDown':
-                if (snake.direction != Direction.Up)
-                snake.direction = Direction.Down;
-                break;
-            case 'ArrowLeft':
-                if (snake.direction != Direction.Right)
-                snake.direction = Direction.Left;
-                break;
-            case 'ArrowRight':
-                if (snake.direction != Direction.Left)
-                snake.direction = Direction.Right;
-                break;
-            case 'ArrowUp':
-                //TODO verificar console log excutando várias vezes
-                if (snake.direction != Direction.Down)
-                snake.direction = Direction.Up;
-                break;
-            case ' ':
-                start();
-                break;
-                
-        }
-    });
+    function stop(){
+        snake.keepWalking = false;
+    }
+
+
 
     return (
         <div className="App">
@@ -116,6 +126,8 @@ function App() {
                     ))
                 }
             </ Field>
+            <button onClick={() => start()}>Teste</button>
+            <button onClick={() => snake.keepWalking = false}>Teste</button>
 
           
 

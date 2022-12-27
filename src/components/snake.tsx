@@ -1,5 +1,3 @@
-import { Component } from 'react'
-
 type SnakeProps = {
     initialHeadRow: number;
     initialHeadColumn: number;
@@ -13,7 +11,7 @@ export enum Direction {
     Right,
 } 
 
-export class Snake extends Component<SnakeProps>{
+export class Snake{
     private row:number;
     private column:number;
     public direction =  Direction.Right;
@@ -21,7 +19,6 @@ export class Snake extends Component<SnakeProps>{
     public keepWalking = false;
 
     constructor(props: SnakeProps) {
-        super(props)
         this.row=props.initialHeadRow;
         this.column=props.initialHeadColumn;
         this.direction = props.direction;
