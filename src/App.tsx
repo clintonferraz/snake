@@ -1,25 +1,41 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './styles/app.sass'
 import { Field } from './components/field'
 import { Row } from './components/row';
 import { Square } from './components/square';
 import { Environment } from './environment';
 import { switchElement } from './utils/switchElement';
-import { Snake } from './components/snake';
-import { Direction } from './components/snake';
 
 
+enum Direction {
+    Up,
+    Down,
+    Left,
+    Right,
+} 
+
+enum SquareType {
+    Wall,
+    EmptyField,
+    SnakeBody,
+    Food
+}
 
 function App() {
     const [boolMatrix, setBoolMatrix] = useState<boolean[][]>(Array(Environment.FIELD_SIZE).fill(false).map(() =>
         Array(Environment.FIELD_SIZE).fill(false))
     );
 
-    const [ snake, setSnake ] = useState(new Snake({
-        initialHeadColumn:1,
-        initialHeadRow:1,
-        direction: Direction.Right
-    })); 
+    const snake = useRef({
+        size: 3,
+        headColumn:3,
+        headRow:1,
+        tailColumn:1,
+        tailRow:1,
+        body:[{row:1, column:2}],
+        direction: Direction.Right,
+        isWalking: false
+    }); 
 
 
 
@@ -28,27 +44,26 @@ function App() {
         
             switch (event.key) {
                 case 'ArrowDown':
-                    if (snake.direction != Direction.Up)
-                    snake.direction = Direction.Down;
+                    if (snake.current.direction != Direction.Up)
+                        snake.current.direction = Direction.Down;
                     break;
                 case 'ArrowLeft':
-                    if (snake.direction != Direction.Right)
-                    snake.direction = Direction.Left;
+                    if (snake.current.direction != Direction.Right)
+                        snake.current.direction = Direction.Left;
                     break;
                 case 'ArrowRight':
-                    if (snake.direction != Direction.Left)
-                    snake.direction = Direction.Right;
+                    if (snake.current.direction != Direction.Left)
+                        snake.current.direction = Direction.Right;
                     break;
                 case 'ArrowUp':
-                    if (snake.direction != Direction.Down)
-                    snake.direction = Direction.Up;
+                    if (snake.current.direction != Direction.Down)
+                        snake.current.direction = Direction.Up
                     break;
                 case ' ':
-                    if(!snake.keepWalking){
+                    if(!snake.current.isWalking){
                         start();
                     } else stop();
                     break;
-
             }
         });
 
@@ -58,7 +73,7 @@ function App() {
 
     useEffect(()=>{
     
-        let a = snake.keepWalking ? setInterval(walk1Step,100) : undefined;
+        let a = snake.current.isWalking ? setInterval(walk1Step, 40) : undefined;
 
         return () => {
             clearInterval(a);
@@ -76,37 +91,48 @@ function App() {
     }
 
     function setSnakeHeadPosition(row:number, column:number){
-        snake.setHeadPosition(row,column);
+        snake.current.headRow = row;
+        snake.current.headColumn = column;
         switchSquareTo(true,row,column);
     }
 
-    function walk1Step(){
-        switch (snake.direction) {
-            case Direction.Right:
-                setSnakeHeadPosition(snake.getRow, snake.getColumn + 1);
-                break;
-            case Direction.Down:
-                setSnakeHeadPosition(snake.getRow + 1, snake.getColumn);
-                break;
-            case Direction.Left:
-                setSnakeHeadPosition(snake.getRow, snake.getColumn - 1);
-                break;        
-            case Direction.Up:
-                setSnakeHeadPosition(snake.getRow - 1, snake.getColumn);
-                break;  
-        }
+    function setSnakeTailPosition(){
+        switchSquareTo(false, snake.current.tailRow, snake.current.tailColumn);
+        snake.current.tailRow = snake.current.body[0].row;
+        snake.current.tailColumn = snake.current.body[0].column;
+        snake.current.body.shift();
+        
     }
 
-    function start(){
-        if(!snake.keepWalking){
+    function walk1Step(){
+        snake.current.body.push({row: snake.current.headRow, column: snake.current.headColumn}) 
+        switch (snake.current.direction) {
+            case Direction.Right:
+                setSnakeHeadPosition(snake.current.headRow, snake.current.headColumn + 1);
+                break;
+            case Direction.Down:
+                setSnakeHeadPosition(snake.current.headRow+ 1, snake.current.headColumn);
+                break;
+            case Direction.Left:
+                setSnakeHeadPosition(snake.current.headRow, snake.current.headColumn - 1);
+                break;        
+            case Direction.Up:
+                setSnakeHeadPosition(snake.current.headRow - 1, snake.current.headColumn);
+                break;  
+        }
+        setSnakeTailPosition();
+    }
+
+    function start(){ 
+        if(!snake.current.isWalking){
             console.log('start');
-            snake.keepWalking = true; 
+            snake.current.isWalking = true;
             walk1Step();
         }
     }
 
     function stop(){
-        snake.keepWalking = false;
+        snake.current.isWalking = false;
     }
 
 
@@ -126,13 +152,6 @@ function App() {
                     ))
                 }
             </ Field>
-            <button onClick={() => start()}>Teste</button>
-            <button onClick={() => snake.keepWalking = false}>Teste</button>
-
-          
-
-           
-        
 
         </div>
     )
